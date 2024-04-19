@@ -18,6 +18,7 @@ const TILE_W: usize = 16;
 const TILE_H: usize = 16;
 
 const BULLET_SPAWN_INTERVAL: f32 = 0.2;
+const BULLET_SPEED: f32 = 4.0;
 
 #[derive(Resource)]
 struct GlobalTextureAtlasHandle(Option<Handle<TextureAtlasLayout>>);
@@ -50,6 +51,9 @@ struct GunTimer(Stopwatch);
 #[derive(Component)]
 struct Bullet;
 
+#[derive(Component)]
+struct BulletDirection(Vec2);
+
 fn main() {
     App::new()
         .add_plugins(
@@ -80,7 +84,7 @@ fn main() {
         .insert_resource(CursorPos(None))
         .add_systems(OnEnter(GameState::Loading), load_assets)
         .add_systems(OnEnter(GameState::GameInit), (setup_camera, init_world))
-        .add_systems(Update, (update_cursor_pos, handle_player_input, handle_gun_input, update_gun_transform).run_if(in_state(GameState::InGame)))
+        .add_systems(Update, (update_cursor_pos, handle_player_input, handle_gun_input, update_gun_transform, update_bullets).run_if(in_state(GameState::InGame)))
         .add_systems(Update, close_on_esc)
 
         .run();
@@ -200,6 +204,8 @@ fn handle_gun_input(
 
     gun_timer.0.reset();
 
+    let bullet_direction = gun_transform.rotation.mul_vec3(Vec3::X).truncate();
+
     commands.spawn((
         SpriteSheetBundle {
             texture: sprite_sheet_handle.0.clone().unwrap(),
@@ -212,7 +218,20 @@ fn handle_gun_input(
             ..default()
         },
         Bullet,
+        BulletDirection(bullet_direction.normalize()),
     ));
+}
+
+fn update_bullets(
+    mut bullet_query: Query<(&mut Transform, &BulletDirection), With<Bullet>>,
+) {
+    if bullet_query.is_empty() {
+        return;
+    }
+
+    for (mut transform, direction) in bullet_query.iter_mut() {
+        transform.translation += Vec3::new(direction.0.x, direction.0.y, 0.0) * BULLET_SPEED;
+    }
 }
 
 fn update_cursor_pos(
