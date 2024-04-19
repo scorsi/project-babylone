@@ -1,10 +1,10 @@
 use std::f32::consts::PI;
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
-use bevy::input::mouse::MouseButtonInput;
 use bevy::math::vec2;
 use bevy::prelude::*;
 use bevy::time::Stopwatch;
 use bevy::window::{close_on_esc, PrimaryWindow};
+use rand::Rng;
 
 const WW: f32 = 1200.0;
 const WH: f32 = 900.0;
@@ -17,8 +17,17 @@ const SPRITE_SHEET_H: usize = 8;
 const TILE_W: usize = 16;
 const TILE_H: usize = 16;
 
+const PLAYER_Z_INDEX: f32 = 10.0;
+const GUN_Z_INDEX: f32 = 11.0;
+const BULLET_Z_INDEX: f32 = 1.0;
+const WORLD_DECORATION_Z_INDEX: f32 = 0.0;
+
 const BULLET_SPAWN_INTERVAL: f32 = 0.2;
 const BULLET_SPEED: f32 = 4.0;
+
+const WORLD_W: f32 = 3000.0;
+const WORLD_H: f32 = 3000.0;
+const WORLD_DECORATION_COUNT: usize = 500;
 
 #[derive(Resource)]
 struct GlobalTextureAtlasHandle(Option<Handle<TextureAtlasLayout>>);
@@ -83,7 +92,7 @@ fn main() {
         .insert_resource(GlobalSpriteSheetHandle(None))
         .insert_resource(CursorPos(None))
         .add_systems(OnEnter(GameState::Loading), load_assets)
-        .add_systems(OnEnter(GameState::GameInit), (setup_camera, init_world))
+        .add_systems(OnEnter(GameState::GameInit), (setup_camera, init_world, spawn_world_decoration))
         .add_systems(Update, (update_cursor_pos, handle_player_input, handle_gun_input, update_gun_transform, update_bullets).run_if(in_state(GameState::InGame)))
         .add_systems(Update, close_on_esc)
 
@@ -125,7 +134,7 @@ fn init_world(
                 layout: texture_atlas_handle.0.clone().unwrap(),
                 index: 0,
             },
-            transform: Transform::from_scale(Vec3::splat(SPRITE_SCALE_FACTOR)),
+            transform: Transform::from_scale(Vec3::splat(SPRITE_SCALE_FACTOR)).with_translation(Vec3::new(0.0, 0.0, PLAYER_Z_INDEX)),
             ..default()
         },
         Player,
@@ -137,7 +146,7 @@ fn init_world(
                 layout: texture_atlas_handle.0.clone().unwrap(),
                 index: 17,
             },
-            transform: Transform::from_scale(Vec3::splat(SPRITE_SCALE_FACTOR)),
+            transform: Transform::from_scale(Vec3::splat(SPRITE_SCALE_FACTOR)).with_translation(Vec3::new(0.0, 0.0, GUN_Z_INDEX)),
             ..default()
         },
         Gun,
@@ -145,6 +154,31 @@ fn init_world(
     ));
 
     game_state.set(GameState::InGame);
+}
+
+fn spawn_world_decoration(
+    mut commands: Commands,
+    texture_atlas_handle: Res<GlobalTextureAtlasHandle>,
+    sprite_sheet_handle: Res<GlobalSpriteSheetHandle>,
+) {
+    let mut rng = rand::thread_rng();
+
+    for _ in 0..WORLD_DECORATION_COUNT {
+        let x = rng.gen_range(-WORLD_W..WORLD_W);
+        let y = rng.gen_range(-WORLD_H..WORLD_H);
+        let index = rng.gen_range(24..=25);
+        commands.spawn((
+            SpriteSheetBundle {
+                texture: sprite_sheet_handle.0.clone().unwrap(),
+                atlas: TextureAtlas {
+                    layout: texture_atlas_handle.0.clone().unwrap(),
+                    index,
+                },
+                transform: Transform::from_scale(Vec3::splat(SPRITE_SCALE_FACTOR)).with_translation(Vec3::new(x, y, WORLD_DECORATION_Z_INDEX)),
+                ..default()
+            },
+        ));
+    }
 }
 
 fn handle_player_input(
@@ -213,7 +247,7 @@ fn handle_gun_input(
                 layout: texture_atlas_handle.0.clone().unwrap(),
                 index: 16,
             },
-            transform: Transform::from_translation(Vec3::new(gun_pos.x, gun_pos.y, 1.0))
+            transform: Transform::from_translation(Vec3::new(gun_pos.x, gun_pos.y, BULLET_Z_INDEX))
                 .with_scale(Vec3::splat(SPRITE_SCALE_FACTOR)),
             ..default()
         },
