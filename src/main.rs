@@ -1,7 +1,9 @@
 use std::f32::consts::PI;
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+use bevy::input::mouse::MouseButtonInput;
 use bevy::math::vec2;
 use bevy::prelude::*;
+use bevy::time::Stopwatch;
 use bevy::window::{close_on_esc, PrimaryWindow};
 
 const WW: f32 = 1200.0;
@@ -14,6 +16,8 @@ const SPRITE_SHEET_W: usize = 8;
 const SPRITE_SHEET_H: usize = 8;
 const TILE_W: usize = 16;
 const TILE_H: usize = 16;
+
+const BULLET_SPAWN_INTERVAL: f32 = 0.2;
 
 #[derive(Resource)]
 struct GlobalTextureAtlasHandle(Option<Handle<TextureAtlasLayout>>);
@@ -39,6 +43,12 @@ struct Player;
 
 #[derive(Component)]
 struct Gun;
+
+#[derive(Component)]
+struct GunTimer(Stopwatch);
+
+#[derive(Component)]
+struct Bullet;
 
 fn main() {
     App::new()
@@ -70,7 +80,7 @@ fn main() {
         .insert_resource(CursorPos(None))
         .add_systems(OnEnter(GameState::Loading), load_assets)
         .add_systems(OnEnter(GameState::GameInit), (setup_camera, init_world))
-        .add_systems(Update, (update_cursor_pos, handle_player_input, update_gun_transform).run_if(in_state(GameState::InGame)))
+        .add_systems(Update, (update_cursor_pos, handle_player_input, handle_gun_input, update_gun_transform).run_if(in_state(GameState::InGame)))
         .add_systems(Update, close_on_esc)
 
         .run();
@@ -127,6 +137,7 @@ fn init_world(
             ..default()
         },
         Gun,
+        GunTimer(Stopwatch::new()),
     ));
 
     game_state.set(GameState::InGame);
@@ -165,6 +176,43 @@ fn handle_player_input(
     if delta.is_finite() && delta != Vec2::ZERO {
         transform.translation += Vec3::new(delta.x, delta.y, 0.0) * PLAYER_SPEED;
     }
+}
+
+fn handle_gun_input(
+    mut commands: Commands,
+    time: Res<Time>,
+    mut gun_query: Query<(&Transform, &mut GunTimer), With<Gun>>,
+    texture_atlas_handle: Res<GlobalTextureAtlasHandle>,
+    sprite_sheet_handle: Res<GlobalSpriteSheetHandle>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
+) {
+    if gun_query.is_empty() {
+        return;
+    }
+
+    let (gun_transform, mut gun_timer) = gun_query.single_mut();
+    let gun_pos = gun_transform.translation.truncate();
+    gun_timer.0.tick(time.delta());
+
+    if !mouse_button_input.pressed(MouseButton::Left) || gun_timer.0.elapsed_secs() < BULLET_SPAWN_INTERVAL {
+        return;
+    }
+
+    gun_timer.0.reset();
+
+    commands.spawn((
+        SpriteSheetBundle {
+            texture: sprite_sheet_handle.0.clone().unwrap(),
+            atlas: TextureAtlas {
+                layout: texture_atlas_handle.0.clone().unwrap(),
+                index: 16,
+            },
+            transform: Transform::from_translation(Vec3::new(gun_pos.x, gun_pos.y, 1.0))
+                .with_scale(Vec3::splat(SPRITE_SCALE_FACTOR)),
+            ..default()
+        },
+        Bullet,
+    ));
 }
 
 fn update_cursor_pos(
