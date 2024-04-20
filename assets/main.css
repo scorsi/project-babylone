@@ -1,3 +1,7 @@
 * {
     font: "monogram.ttf";
 }
+
+.hidden {
+    display: none;
+}

@@ -22,7 +22,7 @@ fn load_assets(
 
 fn spawn_menu(mut commands: Commands) {
     commands.add(eml! {
-        <div c:menu>
+        <div c:menu id="mainmenu">
             <label value="Project Babylone" c:title/>
             <button
                 on:press=run!(|ctx| {
@@ -39,8 +39,6 @@ fn spawn_menu(mut commands: Commands) {
 
 fn despawn_menu(
     mut elements: Elements,
-    mut focused: ResMut<belly::core::input::Focused>,
 ) {
-    elements.select(".menu").remove();
-    *focused = belly::core::input::Focused::default();
+    elements.select("#mainmenu").remove();
 }

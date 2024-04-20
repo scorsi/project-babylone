@@ -1,0 +1,10 @@
+.debugmenu {
+    width: 345px;
+    height: auto;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    padding: 15px 25px;
+    margin: 10px;
+    background-color: #000000a0;
+}
