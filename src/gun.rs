@@ -1,4 +1,5 @@
 use std::f32::consts::PI;
+use std::time::Instant;
 
 use bevy::math::{vec2, vec3};
 use bevy::prelude::*;
@@ -23,6 +24,9 @@ pub struct Bullet;
 #[derive(Component)]
 struct BulletDirection(Vec2);
 
+#[derive(Component)]
+pub struct SpawnInstant(Instant);
+
 impl Plugin for GunPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
@@ -30,6 +34,7 @@ impl Plugin for GunPlugin {
             (
                 update_gun_transform,
                 update_bullets,
+                despawn_old_bullets,
                 handle_gun_input,
                 flip_gun_sprite_y,
             )
@@ -103,6 +108,7 @@ fn handle_gun_input(
         },
         Bullet,
         BulletDirection(bullet_direction.normalize()),
+        SpawnInstant(Instant::now()),
     ));
 }
 
@@ -114,6 +120,17 @@ fn update_bullets(mut bullet_query: Query<(&mut Transform, &BulletDirection), Wi
     for (mut t, dir) in bullet_query.iter_mut() {
         t.translation += dir.0.normalize().extend(0.0) * Vec3::splat(BULLET_SPEED);
         t.translation.z = 10.0;
+    }
+}
+
+fn despawn_old_bullets(
+    mut commands: Commands,
+    bullet_query: Query<(&SpawnInstant, Entity), With<Bullet>>,
+) {
+    for (instant, e) in bullet_query.iter() {
+        if instant.0.elapsed().as_secs_f32() > BULLET_LIFETIME {
+            commands.entity(e).despawn();
+        }
     }
 }
 
