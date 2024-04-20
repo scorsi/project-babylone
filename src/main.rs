@@ -93,7 +93,7 @@ fn main() {
         .insert_resource(CursorPos(None))
         .add_systems(OnEnter(GameState::Loading), load_assets)
         .add_systems(OnEnter(GameState::GameInit), (setup_camera, init_world, spawn_world_decoration))
-        .add_systems(Update, (update_cursor_pos, handle_player_input, handle_gun_input, update_gun_transform, update_bullets).run_if(in_state(GameState::InGame)))
+        .add_systems(Update, (update_cursor_pos, handle_player_input, handle_gun_input, update_gun_transform, update_bullets, camera_follow_player).run_if(in_state(GameState::InGame)))
         .add_systems(Update, close_on_esc)
 
         .run();
@@ -179,6 +179,20 @@ fn spawn_world_decoration(
             },
         ));
     }
+}
+
+fn camera_follow_player(
+    player_query: Query<&Transform, With<Player>>,
+    mut camera_query: Query<&mut Transform, (With<Camera>, Without<Player>)>,
+) {
+    if player_query.is_empty() || camera_query.is_empty() {
+        return;
+    }
+
+    let player_pos = player_query.single().translation.truncate();
+    let mut camera_transform = camera_query.single_mut();
+
+    camera_transform.translation = camera_transform.translation.lerp(Vec3::new(player_pos.x, player_pos.y, camera_transform.translation.z), 0.05);
 }
 
 fn handle_player_input(
