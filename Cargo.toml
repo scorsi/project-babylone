@@ -9,6 +9,12 @@ rand = "0.8.5"
 belly = { git = "https://github.com/jkb0o/belly.git", tag = "v0.5.0" }
 kd-tree = "0.6.0"
 typenum = "1.17.0"
+ron = "0.8.1"
+bevy_common_assets = { version = "0.10.0", features = ["ron"] }
+leafwing_manifest = { version = "0.1.0", features = ["ron"] }
+serde = { version = "1.0.198", features = ["derive"] }
+clap = { version = "4.5.4", features = ["derive"] }
+bevy_aseprite = { git = "https://github.com/ryo33/bevy_aseprite.git", branch = "bevy-0.13" }
 
 [workspace]
 resolver = "2"

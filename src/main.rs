@@ -5,16 +5,29 @@ pub(crate) mod world;
 pub(crate) mod player;
 pub(crate) mod gun;
 pub(crate) mod camera;
-pub(crate) mod enemy;
 pub(crate) mod animation;
 pub(crate) mod collision;
 pub(crate) mod mainmenu;
 pub(crate) mod debug;
+mod assets;
+pub(crate) mod common;
+pub(crate) mod characters;
 
 use bevy::prelude::*;
 use bevy::window::close_on_esc;
 use belly::prelude::*;
+use bevy::app::AppExit;
+use bevy::utils::HashMap;
 use bevy::window::PresentMode::AutoNoVsync;
+use bevy_aseprite::AsepritePlugin;
+use clap::Parser;
+use leafwing_manifest::{
+    asset_state::SimpleAssetState,
+    identifier::Id,
+    manifest::{Manifest, ManifestFormat},
+    plugin::{ManifestPlugin, RegisterManifest},
+};
+use serde::{Deserialize, Serialize};
 
 use crate::consts::*;
 use crate::gun::GunPlugin;
@@ -23,11 +36,12 @@ use crate::resources::ResourcesPlugin;
 use crate::state::GameState;
 use crate::world::WorldPlugin;
 use crate::camera::CameraPlugin;
-use crate::enemy::EnemyPlugin;
 use crate::animation::AnimationPlugin;
+use crate::assets::AssetsPlugin;
 use crate::collision::CollisionPlugin;
 use crate::debug::DebugPlugin;
 use crate::mainmenu::MainMenuPlugin;
+use crate::characters::monsters::MonstersPlugin;
 
 fn main() {
     App::new()
@@ -45,6 +59,7 @@ fn main() {
                     ..default()
                 }),
             BellyPlugin,
+            AsepritePlugin,
         ))
         .insert_resource(Msaa::Off)
 
@@ -59,11 +74,13 @@ fn main() {
             PlayerPlugin,
             GunPlugin,
             CameraPlugin,
-            EnemyPlugin,
             AnimationPlugin,
             CollisionPlugin,
             MainMenuPlugin,
             DebugPlugin,
+            // new modules
+            AssetsPlugin,
+            MonstersPlugin,
         ))
         .add_systems(Update, close_on_esc)
 

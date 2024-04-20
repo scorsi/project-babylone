@@ -4,8 +4,7 @@ use belly::prelude::*;
 use bevy::diagnostic::{DiagnosticsStore, EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin, SystemInformationDiagnosticsPlugin};
 use belly::widgets::common::Label;
 use bevy::time::common_conditions::on_timer;
-
-use crate::enemy::Enemy;
+use crate::characters::monsters::Monster;
 use crate::state::GameState;
 
 pub struct DebugPlugin;
@@ -17,7 +16,7 @@ struct DebugMenu {
     cpu_usage: f32,
     memory_usage: f32,
     num_enemies: usize,
-    entity_count: usize,
+    monster_count: usize,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Copy, Default, States)]
@@ -55,7 +54,7 @@ impl Plugin for DebugPlugin {
 fn load_assets(
     mut commands: Commands,
 ) {
-    commands.add(StyleSheet::load("debugmenu.css"));
+    commands.add(StyleSheet::load("styles/debugmenu.css"));
 }
 
 fn spawn_debugmenu(
@@ -72,15 +71,15 @@ fn spawn_debugmenu(
 fn fetch_debug_data(
     mut query: Query<&mut DebugMenu>,
     diagnostics: Res<DiagnosticsStore>,
-    enemy_query: Query<(), With<Enemy>>,
+    monster_query: Query<(), With<Monster>>,
 ) {
-    if query.is_empty() || enemy_query.is_empty() {
+    if query.is_empty() || monster_query.is_empty() {
         return;
     }
 
     let mut debug_menu = query.single_mut();
 
-    debug_menu.num_enemies = enemy_query.iter().count();
+    debug_menu.num_enemies = monster_query.iter().count();
 
     if let Some(fps) = diagnostics.get(&FrameTimeDiagnosticsPlugin::FPS) {
         if let Some(value) = fps.smoothed() {
@@ -96,7 +95,7 @@ fn fetch_debug_data(
 
     if let Some(entity_count) = diagnostics.get(&EntityCountDiagnosticsPlugin::ENTITY_COUNT) {
         if let Some(value) = entity_count.value() {
-            debug_menu.entity_count = value as usize;
+            debug_menu.monster_count = value as usize;
         }
     }
 
@@ -123,12 +122,12 @@ fn update_debug_menu_text(
     let (debug_menu, mut label) = query.single_mut();
 
     label.value = format!(
-        "FPS: {:.2} | {:.2}\nCPU: {:.2} | RAM: {:.2}\nEntities: {} ({} enemies)",
+        "FPS: {:.2} | {:.2}\nCPU: {:.2} | RAM: {:.2}\nEntities: {} ({} monsters)",
         debug_menu.fps,
         debug_menu.frame_time,
         debug_menu.cpu_usage,
         debug_menu.memory_usage,
-        debug_menu.entity_count,
+        debug_menu.monster_count,
         debug_menu.num_enemies,
     );
 }

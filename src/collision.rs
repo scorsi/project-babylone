@@ -4,8 +4,8 @@ use bevy::time::common_conditions::on_timer;
 use kd_tree::{KdPoint, KdTree};
 
 use crate::consts::*;
-use crate::enemy::Enemy;
 use crate::gun::Bullet;
+use crate::characters::monsters::Monster;
 use crate::player::{Player, PlayerEnemyCollisionEvent};
 use crate::state::GameState;
 
@@ -56,7 +56,7 @@ impl Plugin for CollisionPlugin {
 
 fn update_enemy_kd_tree(
     mut tree: ResMut<EnemyKdTree>,
-    enemy_query: Query<(&Transform, Entity), With<Enemy>>,
+    enemy_query: Query<(&Transform, Entity), With<Monster>>,
 ) {
     let mut items = Vec::new();
     for (transform, entity) in enemy_query.iter() {
@@ -73,7 +73,7 @@ fn handle_enemy_bullet_collision(
     mut commands: Commands,
     bullet_query: Query<(&Transform, Entity), With<Bullet>>,
     tree: Res<EnemyKdTree>,
-    mut enemy_query: Query<(&Transform, &mut Enemy), With<Enemy>>,
+    mut enemy_query: Query<(&Transform, &mut Monster), With<Monster>>,
 ) {
     if bullet_query.is_empty() || enemy_query.is_empty() {
         return;
@@ -86,7 +86,7 @@ fn handle_enemy_bullet_collision(
         for e in enemies {
             if let Ok((_, mut enemy)) = enemy_query.get_mut(e.entity) {
                 if let Some(mut entity_command) = commands.get_entity(entity) {
-                    enemy.health -= BULLET_DAMAGE;
+                    // enemy.health -= BULLET_DAMAGE;
                     entity_command.despawn();
                 }
             }

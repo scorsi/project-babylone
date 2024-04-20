@@ -16,8 +16,8 @@ impl Plugin for MainMenuPlugin {
 fn load_assets(
     mut commands: Commands,
 ) {
-    commands.add(StyleSheet::load("main.css"));
-    commands.add(StyleSheet::load("mainmenu.css"));
+    commands.add(StyleSheet::load("styles/main.css"));
+    commands.add(StyleSheet::load("styles/mainmenu.css"));
 }
 
 fn spawn_menu(mut commands: Commands) {
