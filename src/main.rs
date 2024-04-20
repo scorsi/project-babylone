@@ -6,6 +6,7 @@ pub(crate) mod player;
 pub(crate) mod gun;
 pub(crate) mod camera;
 pub(crate) mod enemy;
+pub(crate) mod animation;
 
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
@@ -19,6 +20,7 @@ use crate::state::GameState;
 use crate::world::WorldPlugin;
 use crate::camera::CameraPlugin;
 use crate::enemy::EnemyPlugin;
+use crate::animation::AnimationPlugin;
 
 fn main() {
     App::new()
@@ -51,6 +53,7 @@ fn main() {
             GunPlugin,
             CameraPlugin,
             EnemyPlugin,
+            AnimationPlugin,
         ))
         .add_systems(Update, close_on_esc)
 

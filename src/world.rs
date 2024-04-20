@@ -2,6 +2,7 @@ use bevy::math::vec3;
 use bevy::prelude::*;
 use bevy::time::Stopwatch;
 use rand::Rng;
+use crate::animation::AnimationTimer;
 
 use crate::consts::*;
 use crate::player::Player;
@@ -38,6 +39,7 @@ fn init_world(
             ..default()
         },
         Player,
+        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
         GameEntity,
     ));
     commands.spawn((

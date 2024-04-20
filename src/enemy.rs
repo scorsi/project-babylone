@@ -3,6 +3,7 @@ use bevy::math::vec3;
 use bevy::prelude::*;
 use bevy::time::common_conditions::on_timer;
 use rand::Rng;
+use crate::animation::AnimationTimer;
 
 use crate::consts::*;
 use crate::player::Player;
@@ -66,6 +67,7 @@ fn spawn_enemies(
                 ..default()
             },
             Enemy,
+            AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
         ));
     }
 }
