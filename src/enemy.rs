@@ -92,6 +92,7 @@ fn get_random_position_around(pos: Vec2) -> Vec2 {
 }
 
 fn update_enemy_transform(
+    time: Res<Time>,
     mut enemy_query: Query<&mut Transform, With<Enemy>>,
     player_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
 ) {
@@ -107,7 +108,7 @@ fn update_enemy_transform(
         let distance = direction.length();
         let direction = direction / distance;
 
-        enemy_transform.translation += direction.extend(0.0) * ENEMY_SPEED;
+        enemy_transform.translation += direction.extend(0.0) * ENEMY_SPEED * time.delta_seconds();
     }
 }
 

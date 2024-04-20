@@ -15,10 +15,10 @@ pub const BULLET_Z_INDEX: f32 = 1.0;
 pub const WORLD_DECORATION_Z_INDEX: f32 = 0.0;
 pub const ENEMY_Z_INDEX: f32 = 9.0;
 
-pub const BULLET_SPAWN_INTERVAL: f32 = 0.12;
-pub const BULLET_SPEED: f32 = 5.5;
+pub const BULLET_SPAWN_INTERVAL: f32 = 0.22;
+pub const BULLET_SPEED: f32 = 700.0;
 pub const BULLET_DAMAGE: f32 = 25.0;
-pub const BULLET_LIFETIME: f32 = 1.2;
+pub const BULLET_LIFETIME: f32 = 0.5;
 pub const NUM_BULLETS_PER_SHOT: usize = 25;
 pub const BULLET_MAX_SPREADING_ANGLE: f32 = 0.25;
 
@@ -27,10 +27,10 @@ pub const WORLD_H: f32 = 3000.0;
 pub const NUM_WORLD_DECORATIONS: usize = 500;
 
 
-pub const PLAYER_SPEED: f32 = 2.0;
+pub const PLAYER_SPEED: f32 = 300.0;
 
 pub const MAX_NUM_ENEMIES: usize = 10000;
 pub const ENEMY_SPAWN_INTERVAL: f32 = 1.0;
 pub const ENEMY_SPAWN_RATE_PER_SECOND: usize = 250;
-pub const ENEMY_SPEED: f32 = 1.0;
+pub const ENEMY_SPEED: f32 = 225.0;
 pub const ENEMY_MAX_HEALTH: f32 = 100.0;

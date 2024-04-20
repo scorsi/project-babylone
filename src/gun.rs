@@ -122,13 +122,16 @@ fn handle_gun_input(
     }
 }
 
-fn update_bullets(mut bullet_query: Query<(&mut Transform, &BulletDirection), With<Bullet>>) {
+fn update_bullets(
+    time: Res<Time>,
+    mut bullet_query: Query<(&mut Transform, &BulletDirection), With<Bullet>>,
+) {
     if bullet_query.is_empty() {
         return;
     }
 
     for (mut t, dir) in bullet_query.iter_mut() {
-        t.translation += dir.0.normalize().extend(0.0) * Vec3::splat(BULLET_SPEED);
+        t.translation += dir.0.normalize().extend(0.0) * Vec3::splat(BULLET_SPEED) * time.delta_seconds();
         t.translation.z = 10.0;
     }
 }

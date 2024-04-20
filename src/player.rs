@@ -31,6 +31,7 @@ impl Plugin for PlayerPlugin {
 }
 
 fn handle_player_input(
+    time: Res<Time>,
     mut player_query: Query<(&mut Transform, &mut PlayerState), With<Player>>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
 ) {
@@ -61,7 +62,7 @@ fn handle_player_input(
     delta = delta.normalize();
 
     if delta.is_finite() && delta != Vec2::ZERO {
-        transform.translation += Vec3::new(delta.x, delta.y, 0.0) * PLAYER_SPEED;
+        transform.translation += Vec3::new(delta.x, delta.y, 0.0) * PLAYER_SPEED * time.delta_seconds();
         *player_state = PlayerState::Run;
     } else {
         *player_state = PlayerState::Idle;
