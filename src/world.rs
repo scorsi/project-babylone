@@ -5,7 +5,7 @@ use rand::Rng;
 use crate::animation::AnimationTimer;
 
 use crate::consts::*;
-use crate::player::Player;
+use crate::player::{Player, PlayerState};
 use crate::gun::{Gun, GunTimer};
 use crate::state::GameState;
 use crate::resources::GlobalTextureAtlas;
@@ -39,7 +39,8 @@ fn init_world(
             ..default()
         },
         Player,
-        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
+        PlayerState::default(),
+        AnimationTimer(Timer::from_seconds(0.15, TimerMode::Repeating)),
         GameEntity,
     ));
     commands.spawn((

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use crate::enemy::Enemy;
 
-use crate::player::Player;
+use crate::player::{Player, PlayerState};
 use crate::state::GameState;
 
 pub struct AnimationPlugin;
@@ -34,15 +34,19 @@ fn animation_timer_tick(
 
 fn animate_player(
     time: Res<Time>,
-    mut player_query: Query<(&mut TextureAtlas, &AnimationTimer), With<Player>>,
+    mut player_query: Query<(&mut TextureAtlas, &AnimationTimer, &PlayerState), With<Player>>,
 ) {
     if player_query.is_empty() {
         return;
     }
 
-    let (mut texture, timer) = player_query.single_mut();
+    let (mut texture, timer, player_state) = player_query.single_mut();
     if timer.just_finished() {
-        texture.index = (texture.index + 1) % 4;
+        let base_sprite_index = match player_state {
+            PlayerState::Idle => 0,
+            PlayerState::Run => 4,
+        };
+        texture.index = base_sprite_index + (texture.index + 1) % 4;
     }
 }
 
