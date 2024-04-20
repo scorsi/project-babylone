@@ -6,6 +6,7 @@ use kd_tree::{KdPoint, KdTree};
 use crate::consts::*;
 use crate::enemy::Enemy;
 use crate::gun::Bullet;
+use crate::player::{Player, PlayerEnemyCollisionEvent};
 use crate::state::GameState;
 
 pub struct CollisionPlugin;
@@ -44,7 +45,7 @@ impl Plugin for CollisionPlugin {
             .add_systems(
                 Update,
                 (
-                    // handle_player_enemy_collision,
+                    handle_enemy_player_collision,
                     handle_enemy_bullet_collision,
                     update_enemy_kd_tree.run_if(on_timer(Duration::from_secs_f32(KD_TREE_REFRESH_RATE))),
                 )
@@ -84,9 +85,31 @@ fn handle_enemy_bullet_collision(
 
         for e in enemies {
             if let Ok((_, mut enemy)) = enemy_query.get_mut(e.entity) {
-                enemy.health -= BULLET_DAMAGE;
-                commands.entity(entity).despawn();
+                if let Some(mut entity_command) = commands.get_entity(entity) {
+                    enemy.health -= BULLET_DAMAGE;
+                    entity_command.despawn();
+                }
             }
+        }
+    }
+}
+
+fn handle_enemy_player_collision(
+    mut commands: Commands,
+    player_query: Query<&Transform, With<Player>>,
+    tree: Res<EnemyKdTree>,
+    mut ew: EventWriter<PlayerEnemyCollisionEvent>,
+) {
+    if player_query.is_empty() {
+        return;
+    }
+
+    let player_pos = player_query.single().translation;
+    let enemies = tree.0.within_radius(&[player_pos.x, player_pos.y], 50.0);
+    for c in enemies.iter() {
+        if let Some(mut entity_command) = commands.get_entity(c.entity) {
+            ew.send(PlayerEnemyCollisionEvent);
+            entity_command.despawn();
         }
     }
 }

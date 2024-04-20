@@ -10,6 +10,7 @@ use crate::consts::*;
 use crate::player::Player;
 use crate::resources::GlobalTextureAtlas;
 use crate::state::GameState;
+use crate::world::GameEntity;
 
 pub struct EnemyPlugin;
 
@@ -72,6 +73,7 @@ fn spawn_enemies(
                 ..default()
             },
             Enemy::default(),
+            GameEntity,
             AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
         ));
     }

@@ -10,6 +10,7 @@ use crate::consts::*;
 use crate::player::Player;
 use crate::state::GameState;
 use crate::resources::{CursorPosition, GlobalTextureAtlas};
+use crate::world::GameEntity;
 
 pub struct GunPlugin;
 
@@ -117,6 +118,7 @@ fn handle_gun_input(
             },
             Bullet,
             BulletDirection(bullet_direction.normalize()),
+            GameEntity,
             SpawnInstant(Instant::now()),
         ));
     }

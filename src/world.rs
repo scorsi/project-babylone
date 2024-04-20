@@ -5,7 +5,7 @@ use rand::Rng;
 use crate::animation::AnimationTimer;
 
 use crate::consts::*;
-use crate::player::{Player, PlayerState};
+use crate::player::{Health, Player, PlayerState};
 use crate::gun::{Gun, GunTimer};
 use crate::state::GameState;
 use crate::resources::GlobalTextureAtlas;
@@ -40,6 +40,7 @@ fn init_world(
         },
         Player,
         PlayerState::default(),
+        Health(PLAYER_MAX_HEALTH),
         AnimationTimer(Timer::from_seconds(0.15, TimerMode::Repeating)),
         GameEntity,
     ));

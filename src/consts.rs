@@ -28,11 +28,13 @@ pub const NUM_WORLD_DECORATIONS: usize = 500;
 
 
 pub const PLAYER_SPEED: f32 = 300.0;
+pub const PLAYER_MAX_HEALTH: f32 = 10.0;
 
 pub const MAX_NUM_ENEMIES: usize = 10000;
 pub const ENEMY_SPAWN_INTERVAL: f32 = 1.0;
 pub const ENEMY_SPAWN_RATE_PER_SECOND: usize = 2;
 pub const ENEMY_SPEED: f32 = 225.0;
 pub const ENEMY_MAX_HEALTH: f32 = 100.0;
+pub const ENEMY_DAMAGE: f32 = 1.0;
 
 pub const KD_TREE_REFRESH_RATE: f32 = 0.1;
