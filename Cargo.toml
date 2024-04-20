@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 bevy = "0.13.2"
 rand = "0.8.5"
+belly = { git = "https://github.com/jkb0o/belly.git", tag = "v0.5.0" }
 
 [workspace]
 resolver = "2"
