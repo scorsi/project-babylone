@@ -8,10 +8,12 @@ pub(crate) mod camera;
 pub(crate) mod enemy;
 pub(crate) mod animation;
 pub(crate) mod collision;
+mod menu;
 
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
 use bevy::window::close_on_esc;
+use belly::prelude::*;
 
 use crate::consts::*;
 use crate::gun::GunPlugin;
@@ -23,6 +25,7 @@ use crate::camera::CameraPlugin;
 use crate::enemy::EnemyPlugin;
 use crate::animation::AnimationPlugin;
 use crate::collision::CollisionPlugin;
+use crate::menu::MenuPlugin;
 
 fn main() {
     App::new()
@@ -40,6 +43,7 @@ fn main() {
                 }),
             LogDiagnosticsPlugin::default(),
             FrameTimeDiagnosticsPlugin,
+            BellyPlugin,
         ))
         .insert_resource(Msaa::Off)
 
@@ -57,6 +61,7 @@ fn main() {
             EnemyPlugin,
             AnimationPlugin,
             CollisionPlugin,
+            MenuPlugin,
         ))
         .add_systems(Update, close_on_esc)
 
