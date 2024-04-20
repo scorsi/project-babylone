@@ -31,6 +31,7 @@ impl Plugin for GunPlugin {
                 update_gun_transform,
                 update_bullets,
                 handle_gun_input,
+                flip_gun_sprite_y,
             )
                 .run_if(in_state(GameState::InGame)),
         );
@@ -113,5 +114,23 @@ fn update_bullets(mut bullet_query: Query<(&mut Transform, &BulletDirection), Wi
     for (mut t, dir) in bullet_query.iter_mut() {
         t.translation += dir.0.normalize().extend(0.0) * Vec3::splat(BULLET_SPEED);
         t.translation.z = 10.0;
+    }
+}
+
+fn flip_gun_sprite_y(
+    cursor_position: Res<CursorPosition>,
+    mut gun_query: Query<(&mut Sprite, &Transform), With<Gun>>,
+) {
+    if gun_query.is_empty() {
+        return;
+    }
+
+    let (mut sprite, transform) = gun_query.single_mut();
+    if let Some(cursor_position) = cursor_position.0 {
+        if cursor_position.x > transform.translation.x {
+            sprite.flip_y = false;
+        } else {
+            sprite.flip_y = true;
+        }
     }
 }

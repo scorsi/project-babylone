@@ -22,6 +22,7 @@ impl Plugin for EnemyPlugin {
                 (
                     spawn_enemies.run_if(on_timer(Duration::from_secs_f32(ENEMY_SPAWN_INTERVAL))),
                     update_enemy_transform,
+                    flip_enemy_sprite_x,
                 ).run_if(in_state(GameState::InGame)),
             );
     }
@@ -86,5 +87,23 @@ fn update_enemy_transform(
         let direction = direction / distance;
 
         enemy_transform.translation += direction.extend(0.0) * ENEMY_SPEED;
+    }
+}
+
+fn flip_enemy_sprite_x(
+    player_query: Query<&Transform, With<Player>>,
+    mut enemy_query: Query<(&mut Sprite, &Transform), With<Enemy>>,
+) {
+    if player_query.is_empty() || enemy_query.is_empty() {
+        return;
+    }
+
+    let player_pos = player_query.single().translation;
+    for (mut sprite, transform) in enemy_query.iter_mut() {
+        if transform.translation.x < player_pos.x {
+            sprite.flip_x = false;
+        } else {
+            sprite.flip_x = true;
+        }
     }
 }

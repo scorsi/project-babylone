@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
 use crate::consts::*;
+use crate::resources::CursorPosition;
 use crate::state::GameState;
 
 pub struct PlayerPlugin;
@@ -15,6 +16,7 @@ impl Plugin for PlayerPlugin {
                 Update,
                 (
                     handle_player_input,
+                    flip_player_sprite_x,
                 )
                     .run_if(in_state(GameState::InGame)),
             );
@@ -53,5 +55,23 @@ fn handle_player_input(
 
     if delta.is_finite() && delta != Vec2::ZERO {
         transform.translation += Vec3::new(delta.x, delta.y, 0.0) * PLAYER_SPEED;
+    }
+}
+
+fn flip_player_sprite_x(
+    cursor_position: Res<CursorPosition>,
+    mut player_query: Query<(&mut Sprite, &Transform), With<Player>>,
+) {
+    if player_query.is_empty() {
+        return;
+    }
+
+    let (mut sprite, transform) = player_query.single_mut();
+    if let Some(cursor_position) = cursor_position.0 {
+        if cursor_position.x > transform.translation.x {
+            sprite.flip_x = false;
+        } else {
+            sprite.flip_x = true;
+        }
     }
 }
