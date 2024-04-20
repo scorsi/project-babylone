@@ -13,6 +13,7 @@ pub const PLAYER_Z_INDEX: f32 = 10.0;
 pub const GUN_Z_INDEX: f32 = 11.0;
 pub const BULLET_Z_INDEX: f32 = 1.0;
 pub const WORLD_DECORATION_Z_INDEX: f32 = 0.0;
+pub const ENEMY_Z_INDEX: f32 = 9.0;
 
 pub const BULLET_SPAWN_INTERVAL: f32 = 0.2;
 pub const BULLET_SPEED: f32 = 4.0;
@@ -23,3 +24,7 @@ pub const NUM_WORLD_DECORATIONS: usize = 500;
 
 
 pub const PLAYER_SPEED: f32 = 2.0;
+
+pub const MAX_NUM_ENEMIES: usize = 500;
+pub const ENEMY_SPAWN_INTERVAL: f32 = 1.0;
+pub const ENEMY_SPEED: f32 = 1.0;
