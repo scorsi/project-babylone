@@ -14,6 +14,7 @@ pub(crate) mod debug;
 use bevy::prelude::*;
 use bevy::window::close_on_esc;
 use belly::prelude::*;
+use bevy::window::PresentMode::AutoNoVsync;
 
 use crate::consts::*;
 use crate::gun::GunPlugin;
@@ -38,6 +39,7 @@ fn main() {
                         resizable: true,
                         focused: true,
                         resolution: (WW, WH).into(),
+                        present_mode: AutoNoVsync,
                         ..default()
                     }),
                     ..default()
