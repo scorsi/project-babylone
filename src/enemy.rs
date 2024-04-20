@@ -1,5 +1,6 @@
+use std::f32::consts::PI;
 use std::time::Duration;
-use bevy::math::vec3;
+use bevy::math::{vec2, vec3};
 use bevy::prelude::*;
 use bevy::time::common_conditions::on_timer;
 use rand::Rng;
@@ -49,21 +50,16 @@ fn spawn_enemies(
     }
 
     let num_enemies = enemy_query.iter().count();
-    let enemy_spawn_count = (MAX_NUM_ENEMIES - num_enemies).min(10);
+    let enemy_spawn_count = (MAX_NUM_ENEMIES - num_enemies).min(ENEMY_SPAWN_RATE_PER_SECOND);
 
     if num_enemies >= MAX_NUM_ENEMIES {
         return;
     }
 
     let player_pos = player_query.single().translation.truncate();
-    let mut rng = rand::thread_rng();
 
     for _ in 0..enemy_spawn_count {
-        let enemy_pos = vec3(
-            rng.gen_range(-WORLD_W..WORLD_W),
-            rng.gen_range(-WORLD_H..WORLD_H),
-            ENEMY_Z_INDEX,
-        );
+        let enemy_pos = get_random_position_around(player_pos).extend(ENEMY_Z_INDEX);
 
         commands.spawn((
             SpriteSheetBundle {
@@ -79,6 +75,20 @@ fn spawn_enemies(
             AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
         ));
     }
+}
+
+fn get_random_position_around(pos: Vec2) -> Vec2 {
+    let mut rng = rand::thread_rng();
+    let angle = rng.gen_range(0.0..PI * 2.0);
+    let dist = rng.gen_range(1000.0..5000.0);
+
+    let offset_x = angle.cos() * dist;
+    let offset_y = angle.sin() * dist;
+
+    let random_x = pos.x + offset_x;
+    let random_y = pos.y + offset_y;
+
+    vec2(random_x, random_y)
 }
 
 fn update_enemy_transform(
