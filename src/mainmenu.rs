@@ -2,9 +2,9 @@ use bevy::prelude::*;
 use belly::prelude::*;
 use crate::state::GameState;
 
-pub struct MenuPlugin;
+pub struct MainMenuPlugin;
 
-impl Plugin for MenuPlugin {
+impl Plugin for MainMenuPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(OnEnter(GameState::Loading), load_assets)
