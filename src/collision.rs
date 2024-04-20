@@ -28,7 +28,7 @@ fn handle_enemy_bullet_collision(
 ) {
     for (bullet_transform, bullet_entity) in bullet_query.iter() {
         for (enemy_transform, mut enemy) in enemy_query.iter_mut() {
-            if bullet_transform.translation.distance_squared(enemy_transform.translation) <= 100.0 {
+            if bullet_transform.translation.distance_squared(enemy_transform.translation) <= 500.0 {
                 enemy.health -= BULLET_DAMAGE;
                 commands.entity(bullet_entity).despawn();
             }

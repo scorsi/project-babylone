@@ -4,6 +4,7 @@ use std::time::Instant;
 use bevy::math::{vec2, vec3};
 use bevy::prelude::*;
 use bevy::time::Stopwatch;
+use rand::Rng;
 
 use crate::consts::*;
 use crate::player::Player;
@@ -92,24 +93,33 @@ fn handle_gun_input(
     }
 
     gun_timer.0.reset();
+    let mut rng = rand::thread_rng();
 
-    let bullet_direction = gun_transform.rotation.mul_vec3(Vec3::X).truncate();
+    let gun_direction = gun_transform.rotation.mul_vec3(Vec3::X).truncate();
 
-    commands.spawn((
-        SpriteSheetBundle {
-            texture: handle.image.clone().unwrap(),
-            atlas: TextureAtlas {
-                layout: handle.layout.clone().unwrap(),
-                index: 16,
+    for _ in 0..NUM_BULLETS_PER_SHOT {
+        let bullet_spread_angle = rng.gen_range(-BULLET_MAX_SPREADING_ANGLE..BULLET_MAX_SPREADING_ANGLE);
+        let bullet_direction = vec2(
+            gun_direction.x * bullet_spread_angle.cos() - gun_direction.y * bullet_spread_angle.sin(),
+            gun_direction.x * bullet_spread_angle.sin() + gun_direction.y * bullet_spread_angle.cos(),
+        );
+
+        commands.spawn((
+            SpriteSheetBundle {
+                texture: handle.image.clone().unwrap(),
+                atlas: TextureAtlas {
+                    layout: handle.layout.clone().unwrap(),
+                    index: 16,
+                },
+                transform: Transform::from_translation(Vec3::new(gun_pos.x, gun_pos.y, BULLET_Z_INDEX))
+                    .with_scale(Vec3::splat(SPRITE_SCALE_FACTOR)),
+                ..default()
             },
-            transform: Transform::from_translation(Vec3::new(gun_pos.x, gun_pos.y, BULLET_Z_INDEX))
-                .with_scale(Vec3::splat(SPRITE_SCALE_FACTOR)),
-            ..default()
-        },
-        Bullet,
-        BulletDirection(bullet_direction.normalize()),
-        SpawnInstant(Instant::now()),
-    ));
+            Bullet,
+            BulletDirection(bullet_direction.normalize()),
+            SpawnInstant(Instant::now()),
+        ));
+    }
 }
 
 fn update_bullets(mut bullet_query: Query<(&mut Transform, &BulletDirection), With<Bullet>>) {

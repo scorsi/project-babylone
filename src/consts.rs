@@ -19,6 +19,8 @@ pub const BULLET_SPAWN_INTERVAL: f32 = 0.2;
 pub const BULLET_SPEED: f32 = 4.0;
 pub const BULLET_DAMAGE: f32 = 15.0;
 pub const BULLET_LIFETIME: f32 = 1.0;
+pub const NUM_BULLETS_PER_SHOT: usize = 3;
+pub const BULLET_MAX_SPREADING_ANGLE: f32 = 0.1;
 
 pub const WORLD_W: f32 = 3000.0;
 pub const WORLD_H: f32 = 3000.0;
