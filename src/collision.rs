@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use crate::consts::BULLET_DAMAGE;
 use crate::enemy::Enemy;
 use crate::gun::Bullet;
 
@@ -23,13 +24,13 @@ impl Plugin for CollisionPlugin {
 fn handle_enemy_bullet_collision(
     mut commands: Commands,
     bullet_query: Query<(&Transform, Entity), With<Bullet>>,
-    enemy_query: Query<(&Transform, Entity), (With<Enemy>, Without<Bullet>)>,
+    mut enemy_query: Query<(&Transform, &mut Enemy), (With<Enemy>, Without<Bullet>)>,
 ) {
     for (bullet_transform, bullet_entity) in bullet_query.iter() {
-        for (enemy_transform, enemy_entity) in enemy_query.iter() {
+        for (enemy_transform, mut enemy) in enemy_query.iter_mut() {
             if bullet_transform.translation.distance_squared(enemy_transform.translation) <= 100.0 {
+                enemy.health -= BULLET_DAMAGE;
                 commands.entity(bullet_entity).despawn();
-                commands.entity(enemy_entity).despawn();
             }
         }
     }

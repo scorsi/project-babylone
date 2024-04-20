@@ -17,6 +17,7 @@ pub const ENEMY_Z_INDEX: f32 = 9.0;
 
 pub const BULLET_SPAWN_INTERVAL: f32 = 0.2;
 pub const BULLET_SPEED: f32 = 4.0;
+pub const BULLET_DAMAGE: f32 = 15.0;
 
 pub const WORLD_W: f32 = 3000.0;
 pub const WORLD_H: f32 = 3000.0;
@@ -28,3 +29,4 @@ pub const PLAYER_SPEED: f32 = 2.0;
 pub const MAX_NUM_ENEMIES: usize = 500;
 pub const ENEMY_SPAWN_INTERVAL: f32 = 1.0;
 pub const ENEMY_SPEED: f32 = 1.0;
+pub const ENEMY_MAX_HEALTH: f32 = 100.0;

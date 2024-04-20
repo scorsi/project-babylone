@@ -13,7 +13,15 @@ use crate::state::GameState;
 pub struct EnemyPlugin;
 
 #[derive(Component)]
-pub struct Enemy;
+pub struct Enemy {
+    pub health: f32,
+}
+
+impl Default for Enemy {
+    fn default() -> Self {
+        Self { health: 100.0 }
+    }
+}
 
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut App) {
@@ -23,6 +31,7 @@ impl Plugin for EnemyPlugin {
                 (
                     spawn_enemies.run_if(on_timer(Duration::from_secs_f32(ENEMY_SPAWN_INTERVAL))),
                     update_enemy_transform,
+                    despawn_dead_enemies,
                     flip_enemy_sprite_x,
                 ).run_if(in_state(GameState::InGame)),
             );
@@ -66,7 +75,7 @@ fn spawn_enemies(
                 transform: Transform::from_translation(enemy_pos).with_scale(Vec3::splat(SPRITE_SCALE_FACTOR)),
                 ..default()
             },
-            Enemy,
+            Enemy::default(),
             AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
         ));
     }
@@ -106,6 +115,18 @@ fn flip_enemy_sprite_x(
             sprite.flip_x = false;
         } else {
             sprite.flip_x = true;
+        }
+    }
+}
+
+fn despawn_dead_enemies(mut commands: Commands, enemy_query: Query<(&Enemy, Entity), With<Enemy>>) {
+    if enemy_query.is_empty() {
+        return;
+    }
+
+    for (enemy, entity) in enemy_query.iter() {
+        if enemy.health <= 0.0 {
+            commands.entity(entity).despawn();
         }
     }
 }
